@@ -7,21 +7,24 @@ st.title("Ollama Python Chatbot 1309")
 if "messages" not in st.session_state:
     st.session_state["messages"] = []
 
-# # init models
-# if "model" not in st.session_state:
-#     st.session_state["model"] = ""
+# init models
+if "model" not in st.session_state:
+    st.session_state["model"] = ""
 
+##########
 # models = [model["name"] for model in ollama.list()["models"]]
-# st.session_state["model"] = st.selectbox("Choose your model", models)
+models = [model["model"] for model in ollama.list()["models"]]
+st.session_state["model"] = st.selectbox("Choose your model", models)
 
-# def model_res_generator():
-#     stream = ollama.chat(
-#         model=st.session_state["model"],
-#         messages=st.session_state["messages"],
-#         stream=True,
-#     )
-#     for chunk in stream:
-#         yield chunk["message"]["content"]
+#########========================
+def model_res_generator():
+    stream = ollama.chat(
+        model=st.session_state["model"],
+        messages=st.session_state["messages"],
+        stream=True,
+    )
+    for chunk in stream:
+        yield chunk["message"]["content"]
 
 # Display chat messages from history on app rerun
 for message in st.session_state["messages"]:
@@ -36,16 +39,15 @@ if prompt := st.chat_input("What is up?"):
         st.markdown(prompt)
 
     with st.chat_message("assistant"):
-      response = ollama.chat(
-        model="mistral",
-        messages=st.session_state["messages"],
-        stream=False
-      )
-      message = response["message"]["content"]
-      st.markdown(message)
-      st.session_state["messages"].append({"role": "assistant", "content": message})
+      ###========================
+      # response = ollama.chat(
+      #   model=st.session_state["model"], ####
+      #   messages=st.session_state["messages"],
+      #   stream=False
+      # )
+      # message = response["message"]["content"]
+      # st.markdown(message)
+      # st.session_state["messages"].append({"role": "assistant", "content": message})
 
-
-
-        # message = st.write_stream(model_res_generator())
-        # st.session_state["messages"].append({"role": "assistant", "content": message})
+        message = st.write_stream(model_res_generator())
+        st.session_state["messages"].append({"role": "assistant", "content": message})
